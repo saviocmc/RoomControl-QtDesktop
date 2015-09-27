@@ -4,6 +4,10 @@
 #include <QMainWindow>
 #include <fstream>
 #include <QKeyEvent>
+#include <QtSerialPort/QSerialPort>
+#include <QSerialPortInfo>
+#include <QAbstractButton>
+#include <QDebug>
 
 namespace Ui {
 class MainWindow;
@@ -18,18 +22,19 @@ public:
     ~MainWindow();
 
 private slots:
-    void sendNano(int);
 
-    void on_pushButton_clicked();
+    void on_horizontalSlider_valueChanged(int value);
 
-    void on_pushButton_2_clicked();
+    void on_horizontalScrollBar_sliderReleased();
+
+    void showSerial();
 
 private:
     Ui::MainWindow *ui;
     std::ofstream nano;
-    std::ifstream tank;
     QKeyEvent *tabPress;
-    QKeyEvent *keyA;
+    QList<QSerialPortInfo> ports;
+    QSerialPort uno;
 };
 
 #endif // MAINWINDOW_H
