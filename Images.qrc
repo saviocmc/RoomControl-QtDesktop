@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/">
+        <file alias="off1">Resources/switch1_off.png</file>
+        <file alias="on1">Resources/switch1_on.png</file>
+        <file alias="off2">Resources/switch2_Off.png</file>
+        <file alias="on2">Resources/switch2_On.png</file>
+        <file alias="off3">Resources/switch3_Off.png</file>
+        <file alias="on3">Resources/switch3_On.png</file>
+        <file alias="nano">Resources/nano.png</file>
+        <file alias="lamp">Resources/Room_Lamp_Label.png</file>
+        <file alias="lumLevel">Resources/Lum_Level_Label.png</file>
+    </qresource>
+</RCC>

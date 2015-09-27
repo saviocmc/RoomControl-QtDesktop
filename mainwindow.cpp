@@ -1,84 +1,54 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <QDesktopWidget>
-#include <QEvent>
-#include <QApplication>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ui->menuBar->hide();
+    connect(ui->actionClose,SIGNAL(triggered()),this,SLOT(exit_room_control()));
 
-    tabPress = new QKeyEvent(QEvent::KeyPress,Qt::Key_Tab,Qt::NoModifier);
+//    titlebar = new Titlebar(this);
+//    titlebar->setParent(this);
 
-    uno.setPortName("/dev/ttyACM0");
-    uno.open(QIODevice::ReadWrite);
-    uno.setBaudRate(QSerialPort::Baud115200);
-    uno.setDataBits(QSerialPort::Data8);
-    uno.setParity(QSerialPort::NoParity);
-    uno.setStopBits(QSerialPort::OneStop);
-    uno.setFlowControl(QSerialPort::NoFlowControl);
+    lamp.setParent(this);
+    lamp.setPixmap(QPixmap(":/lamp"));
+    lamp.setGeometry(10,10,222,47);
 
-    /*foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts()) {
-              qDebug() << "Name        : " << info.portName();
-              qDebug() << "Description : " << info.description();
-              qDebug() << "Manufacturer: " << info.manufacturer();
-    }*/
+    lumLevel.setParent(this);
+    lumLevel.setPixmap(QPixmap(":/lumLevel"));
+    lumLevel.setGeometry(20,80,300,46);
 
-    if (uno.isOpen() && uno.isWritable()) qDebug() << "Ready...";
-    else qDebug() << "Not connected...";
-    QObject::connect(&uno, SIGNAL(readyRead()),this,SLOT(showSerial()));
+    lumProgBar = new QProgressBar(this);
+    lumProgBar->setGeometry(10,130,330,30);
+
+    switchButton = new SwitchButton(this,lamp.width() + 20,10);
+
+    mcu_Connector = new MCU_Connector(this);
+
+    connect(switchButton,SIGNAL(clicked(bool)),this->mcu_Connector,SLOT(switchClicked(bool)));
+    connect(mcu_Connector,SIGNAL(relayStateChanged(bool)),switchButton,SLOT(setState(bool)));
+    connect(mcu_Connector,SIGNAL(statusMessenger(QString,int)),ui->statusBar,SLOT(showMessage(QString,int)));
+    connect(mcu_Connector,SIGNAL(lumLevelChanded(int)),lumProgBar,SLOT(setValue(int)));
+
+    this->setGeometry(500,250,lamp.width()+switchButton->QpixOn.width() + 30,200);
+
+    //this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
+    //this->setWindowFlags(Qt::Tool);
+
+    mcu_Connector->startConnection();
 }
 
 MainWindow::~MainWindow()
 {
-    uno.close();
-    delete (this->tabPress);
+    delete lumProgBar;
+    delete switchButton;
+    delete mcu_Connector;
     delete ui;
 }
 
-void MainWindow::on_horizontalSlider_valueChanged(int value)
-{
-    char svalue[4];
-    sprintf(svalue,"%d",value);
-    QString command = "amixer -q sset 'Master' ";
-    command.append(svalue);
-    command.append("%");
-    ui->label_2->setText(svalue);
-    system(command.toStdString().c_str());
-}
-
-void MainWindow::on_horizontalScrollBar_sliderReleased()
-{
-    static bool lampState = 0;
-    if(lampState){
-        if(ui->horizontalScrollBar->value() < 80 && (uno.isOpen() && uno.isWritable())){
-            QByteArray msg("0");
-            uno.write(msg);
-            uno.flush();
-            //ui->label_3->setText("            OFF");
-            ui->horizontalScrollBar->setValue(0);
-            lampState=!lampState;
-        }
-    }
-    else{
-        if(ui->horizontalScrollBar->value() > 20 && (uno.isOpen() && uno.isWritable())){
-            QByteArray msg("1");
-            uno.write(msg);
-            uno.flush();
-            //ui->label_3->setText("    ON");
-            ui->horizontalScrollBar->setValue(100);
-            lampState=!lampState;
-
-        }
-    }
-}
-
-void MainWindow::showSerial(){
-    //if(uno.waitForReadyRead(0)){
-        QByteArray dados = uno.readLine();
-        qDebug() << dados.data();
-    //}
-    //qDebug() << "Fim da Linha";
+void MainWindow::closeEvent(QCloseEvent *event){
+    //hide();
+    //event->ignore();
 }
