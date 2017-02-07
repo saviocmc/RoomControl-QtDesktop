@@ -5,7 +5,7 @@
 #include <QProgressBar>
 #include <QDebug>
 #include <QLabel>
-#include <MCU_Connector.h>
+#include <McuConnector.h>
 #include <SwitchButton.h>
 #include <Titlebar.h>
 
@@ -23,11 +23,11 @@ public:
     void closeEvent(QCloseEvent *event);
 
 private slots:
-    void exit_room_control(){close();}
+    void exitRoomControl(){close();}
 
 private:
     Ui::MainWindow *ui;
-    MCU_Connector *mcu_Connector;
+    McuConnector *mcuConnector;
     SwitchButton *switchButton;
     QProgressBar *lumProgBar;
     QLabel lamp,lumLevel;

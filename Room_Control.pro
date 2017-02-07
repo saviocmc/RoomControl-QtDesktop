@@ -14,13 +14,14 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
-    MCU_Connector.cpp
+    McuConnector.cpp \
+    MainWindow.cpp
 
-HEADERS  += mainwindow.h \
+HEADERS  += \
     SwitchButton.h \
-    MCU_Connector.h \
-    Titlebar.h
+    Titlebar.h \
+    McuConnector.h \
+    MainWindow.h
 
 FORMS    += mainwindow.ui
 
